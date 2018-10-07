@@ -8,14 +8,20 @@ import matplotlib.pyplot as plt
 import cv2
 import os
 import constans
+import logic
+
 
 #Start
 print("Start application: ", constans.APPNAME)
-
+imageNames=[]
 #get files from path
-print("Path: ",constans.PATH)
-imageNames = [fn for fn in os.listdir(constans.PATH)
-              if any(fn.upper().endswith(ext) for ext in constans.INCLUDED_EXTENSIONS)]
+try:
+    print("Path: ",constans.PATH)
+    imageNames = [fn for fn in os.listdir(constans.PATH)
+            if any(fn.upper().endswith(ext) for ext in constans.INCLUDED_EXTENSIONS)]
+except:
+    print("HIba a fájlok beolvasása közben.")
+
 print(imageNames)
 numberOfImages= len(imageNames)
 images= [None] * numberOfImages
@@ -29,7 +35,7 @@ for imageName in imageNames:
     imageCounter+=1
     print(imageCounter,": ",imageName)
 
-numberOfImages+=3
+
 fig, axes = plt.subplots(nrows = 2, ncols = numberOfImages)
 fig.suptitle(constans.FIGURE_TITLE, fontsize=16)
 
@@ -44,8 +50,14 @@ for i in range(numberOfImages,1,-1):
 # add axes in full width
 gs = axes[0, 0].get_gridspec()
 axbig = fig.add_subplot(gs[1, 0:])
+ax=axes[1,0]
+ax.remove()
 
+fullImage=[None]
+for image in images:
+   fullImage=logic.mergeTwoImage(fullImage,image)
 
+axbig.imshow(fullImage)
 # set plt to full screen and show
 mng = plt.get_current_fig_manager()
 mng.resize(*mng.window.maxsize())
