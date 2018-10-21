@@ -14,6 +14,7 @@ import logic
 #Start
 print("Start application: ", constans.APPNAME)
 imageNames=[]
+
 #get files from path
 try:
     print("Path: ",constans.PATH)
@@ -55,9 +56,12 @@ ax.remove()
 
 fullImage=[None]
 for image in images:
-   fullImage=logic.mergeTwoImage(fullImage,image)
+    fullImage=logic.mergeTwoImage(fullImage,image)
+    print("FullImage (X,Y): ",len(fullImage[0]),len(fullImage))
 
 axbig.imshow(fullImage)
+
+
 # set plt to full screen and show
 mng = plt.get_current_fig_manager()
 mng.resize(*mng.window.maxsize())
