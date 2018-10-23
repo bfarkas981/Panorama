@@ -35,8 +35,16 @@ def mergeTwoImage(img1, img2, isDebug=False):
 
 
     (matches, H, status) = M
-    result = cv2.warpPerspective(img1, H,(img1.shape[1] + img2.shape[1], img1.shape[0]))
-    result[0:img2.shape[0], 0:img2.shape[1]] = img2
+    hX=int(H[0,2])*-1
+    result = cv2.warpPerspective(img1, H, (img1.shape[1] + img2.shape[1], img1.shape[0]))
+
+    result[0:img1.shape[0], 0:img1.shape[1]] = img1
+    
+    result[0:img2.shape[0], hX:hX+img2.shape[1]] = img2
+    
+    
+
+    return result
 
     if isDebug:
         # Draw first 10 matches.
