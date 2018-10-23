@@ -7,19 +7,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import os
-import constans
-import logic
+import constans as c
+import logic2 as l
 
 
 #Start
-print("Start application: ", constans.APPNAME)
+print("Start application: ", c.APPNAME)
 imageNames=[]
 
 #get files from path
 try:
-    print("Path: ",constans.PATH)
-    imageNames = [fn for fn in os.listdir(constans.PATH)
-            if any(fn.upper().endswith(ext) for ext in constans.INCLUDED_EXTENSIONS)]
+    print("Path: ",c.PATH)
+    imageNames = [fn for fn in os.listdir(c.PATH)
+            if any(fn.upper().endswith(ext) for ext in c.INCLUDED_EXTENSIONS)]
 except:
     print("HIba a fájlok beolvasása közben.")
 
@@ -30,7 +30,7 @@ imageCounter=0
 
 # Load imagefiles to array
 for imageName in imageNames:
-    fullImagePath=constans.PATH+"\\"+imageName
+    fullImagePath=c.PATH+"\\"+imageName
     images[imageCounter]=cv2.imread(fullImagePath)
     images[imageCounter]=images[imageCounter][:,:,::-1] #BGR>>RGB
     imageCounter+=1
@@ -38,7 +38,7 @@ for imageName in imageNames:
 
 
 fig, axes = plt.subplots(nrows = 2, ncols = numberOfImages)
-fig.suptitle(constans.FIGURE_TITLE, fontsize=16)
+fig.suptitle(c.FIGURE_TITLE, fontsize=16)
 
 for ax,image in zip(axes.flat,images):
    ax.imshow(image)
@@ -56,7 +56,7 @@ ax.remove()
 
 fullImage=[None]
 for image in images:
-    fullImage=logic.mergeTwoImage(fullImage,image)
+    fullImage=l.mergeTwoImage(fullImage,image,True)
     print("FullImage (X,Y): ",len(fullImage[0]),len(fullImage))
 
 axbig.imshow(fullImage)
