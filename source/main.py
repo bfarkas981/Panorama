@@ -1,15 +1,12 @@
 #Panoráma kép készítő alkalmazás
 #Farkas Balázs P3L47H
 
-
-# import references
-import numpy as np
+# referenciák
 import matplotlib.pyplot as plt
 import cv2
 import os
 import constans as c
 import logic2 as l
-
 
 #Start
 print("Start application: ", c.APPNAME)
@@ -17,11 +14,12 @@ imageNames=[]
 
 #képek betöltése
 try:
-    print("Path: ",c.PATH)
-    imageNames = [fn for fn in os.listdir(c.PATH)
+    fullPath=os.path.join(os.getcwd(),'source','test',c.TESTPATH)
+    print("Path: ",fullPath)
+    imageNames = [fn for fn in os.listdir(fullPath)
             if any(fn.upper().endswith(ext) for ext in c.INCLUDED_EXTENSIONS)]
 except:
-    print("HIba a fájlok beolvasása közben.")
+    print("Hiba a fájlok beolvasása közben.")
 
 print(imageNames)
 numberOfImages= len(imageNames)
@@ -30,7 +28,7 @@ imageCounter=0
 
 # Képfájlok betöltése tömbből
 for imageName in imageNames:
-    fullImagePath=c.PATH+"\\"+imageName
+    fullImagePath=os.path.join(fullPath,imageName)
     images[imageCounter]=cv2.imread(fullImagePath)
     images[imageCounter]=images[imageCounter][:,:,::-1] #BGR>>RGB
     imageCounter+=1
