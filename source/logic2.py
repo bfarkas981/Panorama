@@ -1,55 +1,31 @@
 
-def mergeTwoImage(img1, img2, isDebug=False):
+def mergeTwoImage(imgDest, imgSource, isDebug=False):
     import numpy as np
     import cv2
     from matplotlib import pyplot as plt
-    
-    if len(img1)<=1:
-        return img2
-    if len(img2)<=1:
-        return img1
 
-    # img1 = cv2.imread('C:\\Learn\Phyton\Panorama\\source\\test\\2\\1_1.jpg',1)
-    # img2 = cv2.imread('C:\\Learn\Phyton\Panorama\\source\\test\\2\\1_2.jpg',1)
-    #img1=img1[:,:,::-1] #BGR>>RGB
-    #img2=img2[:,:,::-1] #BGR>>RGB
-    # Initiate ORB detector
+    #Ha a célkép üres, akkor a forráskép
+    if len(imgDest)<=1:
+        return imgSource
+    #Ha a forráskép üres, akkor vissza a célkép
+    if len(imgSource)<=1:
+        return imgDest
+   
+    #kulcspontok keresése az összeillesztéshez
+    kp1, des1 = detectAndDescribe(imgDest)
+    kp2, des2 = detectAndDescribe(imgSource)
 
-
-    # find the keypoints and descriptors with ORB
-    #orb = cv2.ORB_create()
-    #kp1, des1 = orb.detectAndCompute(img1,None)
-    #kp2, des2 = orb.detectAndCompute(img2,None)
-    # create BFMatcher object
-    #bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-    # Match descriptors.
-    #matches = bf.match(des1,des2)
-    # Sort them in the order of their distance.
-    #matches = sorted(matches, key = lambda x:x.distance)
-
-    kp1, des1 = detectAndDescribe(img1)
-    kp2, des2 = detectAndDescribe(img2)
-
-    # match features between the two images
+    # kulcspontok összevetése
     M = matchKeypoints(kp1, kp2, des1, des2, 0.75, 4.0)
 
-
     (matches, H, status) = M
-    hX=int(H[0,2])*-1
-    result = cv2.warpPerspective(img1, H, (img1.shape[1] + img2.shape[1], img1.shape[0]))
-
-    result[0:img1.shape[0], 0:img1.shape[1]] = img1
-    
-    result[0:img2.shape[0], hX:hX+img2.shape[1]] = img2
-    
-    
-
-    return result
-
-    if isDebug:
-        # Draw first 10 matches.
-        #img3 = cv2.drawMatches(img1,kp1,img2,kp2,matches[:50] ,None, flags=2)
-        vis = drawMatches(img1, img2, kp1, kp2, matches,status)
+    hX=int(H[0,2])*-1   # ez az érték, amivel el kell tolni a célképet
+    result = cv2.warpPerspective(imgDest, H, (hX + imgSource.shape[1], imgDest.shape[0]))
+    result[0:imgDest.shape[0], 0:imgDest.shape[1]] = imgDest
+    result[0:imgSource.shape[0], hX:hX+imgSource.shape[1]] = imgSource
+    #debug módban az összeillsztett kulcspontok megjelennek (10)
+    if isDebug: 
+        vis = drawMatches(imgDest, imgSource, kp1, kp2, matches[0:10],status)
         return vis
     else:
         return result
@@ -84,15 +60,6 @@ def detectAndDescribe(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     orb = cv2.ORB_create()
     kps, features = orb.detectAndCompute(gray,None)
-
-    # # detect keypoints in the image
-    # detector = cv2.FeatureDetector_create("SIFT")
-    # kps = detector.detect(gray)
-    # # extract features from the image
-    # extractor = cv2.DescriptorExtractor_create("SIFT")
-    # (kps, features) = extractor.compute(gray, kps)
-    # convert the keypoints from KeyPoint objects to NumPy
-    # arrays
     kps = np.float32([kp.pt for kp in kps])
     # return a tuple of keypoints and features
     return (kps, features)
@@ -100,6 +67,7 @@ def detectAndDescribe(image):
 def matchKeypoints(kpsA, kpsB, featuresA, featuresB,ratio, reprojThresh):
     import numpy as np
     import cv2
+    import constans as c
     
     # compute the raw matches and initialize the list of actual
     # matches
@@ -114,7 +82,7 @@ def matchKeypoints(kpsA, kpsB, featuresA, featuresB,ratio, reprojThresh):
         if len(m) == 2 and m[0].distance < m[1].distance * ratio:
             matches.append((m[0].trainIdx, m[0].queryIdx))
     # computing a homography requires at least 4 matches
-    if len(matches) > 4:
+    if len(matches) > c.MIN_MATCH_COUNT:
         # construct the two sets of points
         ptsA = np.float32([kpsA[i] for (_, i) in matches])
         ptsB = np.float32([kpsB[i] for (i, _) in matches])

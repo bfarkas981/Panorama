@@ -15,7 +15,7 @@ import logic2 as l
 print("Start application: ", c.APPNAME)
 imageNames=[]
 
-#get files from path
+#képek betöltése
 try:
     print("Path: ",c.PATH)
     imageNames = [fn for fn in os.listdir(c.PATH)
@@ -28,7 +28,7 @@ numberOfImages= len(imageNames)
 images= [None] * numberOfImages
 imageCounter=0
 
-# Load imagefiles to array
+# Képfájlok betöltése tömbből
 for imageName in imageNames:
     fullImagePath=c.PATH+"\\"+imageName
     images[imageCounter]=cv2.imread(fullImagePath)
@@ -43,12 +43,12 @@ fig.suptitle(c.FIGURE_TITLE, fontsize=16)
 for ax,image in zip(axes.flat,images):
    ax.imshow(image)
 
-# remove all axes from second row
+# összes tengely eltávollítása a másodi sorból
 for i in range(numberOfImages,1,-1):
     ax=axes[1,i-1]
     ax.remove()
 
-# add axes in full width
+# teljes szélességű tengely hozzáadása
 gs = axes[0, 0].get_gridspec()
 axbig = fig.add_subplot(gs[1, 0:])
 ax=axes[1,0]
@@ -56,13 +56,13 @@ ax.remove()
 
 fullImage=[None]
 for image in images:
-    fullImage=l.mergeTwoImage(fullImage,image,True)
+    fullImage=l.mergeTwoImage(fullImage,image,c.DEBUG_MODE)
     print("FullImage (X,Y): ",len(fullImage[0]),len(fullImage))
 
 axbig.imshow(fullImage)
 
-
-# set plt to full screen and show
+# teljes képernyős plotter beállítása
 mng = plt.get_current_fig_manager()
 mng.resize(*mng.window.maxsize())
 plt.show()
+print("Application ended.")
