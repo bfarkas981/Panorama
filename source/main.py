@@ -41,7 +41,7 @@ fig.suptitle(c.FIGURE_TITLE, fontsize=16)
 for ax,image in zip(axes.flat,images):
    ax.imshow(image)
 
-# összes tengely eltávollítása a másodi sorból
+# összes tengely eltávollítása a második sorból
 for i in range(numberOfImages,1,-1):
     ax=axes[1,i-1]
     ax.remove()
