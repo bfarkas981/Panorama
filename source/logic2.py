@@ -1,7 +1,8 @@
-def mergeTwoImage(imgDest, imgSource, isDebug=False):
-    import numpy as np
-    import cv2
+import numpy as np
+import cv2
+import constans as c
 
+def mergeTwoImage(imgDest, imgSource, isDebug=False):
     #Ha a célkép üres, akkor a forráskép
     if len(imgDest)<=1:
         return imgSource
@@ -46,8 +47,6 @@ def drawMatches(imageA, imageB, kpsA, kpsB, matches, status):
     return vis
 
 def detectAndDescribe(image):
-    import numpy as np
-    import cv2
     # kép konvertálása szürkévé
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     orb = cv2.ORB_create()
@@ -57,10 +56,6 @@ def detectAndDescribe(image):
     return (kps, features)
 
 def matchKeypoints(kpsA, kpsB, featuresA, featuresB,ratio=0.75, reprojThresh=4.0):
-    import numpy as np
-    import cv2
-    import constans as c
-
     matcher = cv2.DescriptorMatcher_create("BruteForce")
     rawMatches = matcher.knnMatch(featuresA, featuresB, 2)
     matches = []
